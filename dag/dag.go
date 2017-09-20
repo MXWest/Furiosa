@@ -12,6 +12,36 @@ import (
 
 const GITHUBQL_URL = "https://api.github.com/graphql"
 
+type SampleRepoQuery struct {
+	Data struct {
+		Viewer struct {
+			Login string `json:"login"`
+			StarredRepositories struct {
+				TotalCount int `json:"totalCount"`
+			} `json:"starredRepositories"`
+			Repositories struct {
+				Edges []struct {
+					Node struct {
+						Name string `json:"name"`
+						Stargazers struct {
+							TotalCount int `json:"totalCount"`
+						} `json:"stargazers"`
+						Forks struct {
+							TotalCount int `json:"totalCount"`
+						} `json:"forks"`
+						Watchers struct {
+							TotalCount int `json:"totalCount"`
+						} `json:"watchers"`
+						Issues struct {
+							TotalCount int `json:"totalCount"`
+						} `json:"issues"`
+					} `json:"node"`
+				} `json:"edges"`
+			} `json:"repositories"`
+		} `json:"viewer"`
+	} `json:"data"`
+}
+
 const A_QUERY = `
 {
 	viewer {
@@ -87,8 +117,10 @@ func main() {
 	fmt.Println("Status: ", resp.Status)
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	var raw map[string]interface{}
-	json.Unmarshal(body, &raw)
+	var s SampleRepoQuery
+	json.Unmarshal(body, &s)
 	fmt.Println("Body:", string(body))
-	fmt.Printf("%v\n", raw)
+	fmt.Printf("%v\n", s)
+	fmt.Printf("login: %v\n", s.Data.Viewer.Login)
+	fmt.Printf("Number of starred repositories: %v\n", s.Data.Viewer.StarredRepositories.TotalCount)
 }
