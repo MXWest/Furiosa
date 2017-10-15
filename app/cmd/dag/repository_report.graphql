@@ -1,0 +1,86 @@
+query MyRepositories($owner: String!) {
+    cep: repository(owner: $owner, name: "CeleryEventProcessor") {
+        ...repoFields
+#        ref(qualifiedName:"refs/heads/dev") {
+        defaultBranchRef {
+            target {
+                ... on Commit {
+                    history(first: 3) {
+                        edges {
+                            node {
+                                oid
+                                message
+                                author {
+                                    name
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    cos: repository(owner: $owner, name: "CheckoutService") {
+        ...repoFields
+    }
+    cat:repository(owner:"urbn", name:"CatalogService"){
+        ...repoFields
+    }
+    atg_services:repository(owner:"urbn", name:"ATG-Services"){
+        ...repoFields
+    }
+}
+
+query anotherQuery {
+    viewer {
+        login
+    }
+}
+
+fragment repoFields on Repository {
+    name
+    description
+    defaultBranchRef {
+        id
+        name
+        prefix
+        target {
+            abbreviatedOid
+            oid
+        }
+    }
+    releases(last: 1) {
+        totalCount
+        edges {
+            node {
+                name
+                author {
+                    name
+                    email
+                }
+                createdAt
+                publishedAt
+                isDraft
+                isPrerelease
+                tag {
+                    name
+                    target {
+                        abbreviatedOid
+                    }
+                }
+                url
+                releaseAssets(first: 5) {
+                    totalCount
+                    edges {
+                        node {
+                            name
+                            size
+                            contentType
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

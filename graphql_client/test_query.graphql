@@ -1,4 +1,35 @@
-{
+query myZeroQuery {
+    node(id: "MDM6UmVmMjgwOTc3MDM6ZGV2") {
+        ... on Repository {
+            ref(qualifiedName: "dev") {
+                target {
+                    ... on Commit {
+                        id
+                        history(first: 30) {
+                            pageInfo {
+                                hasNextPage
+                            }
+
+                            edges {
+                                node {
+                                    oid
+                                    message
+                                    author {
+                                        name
+                                        email
+                                        date
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    }
+
+query myFirstQuery {
     viewer {
         login
         starredRepositories {
