@@ -1,0 +1,71 @@
+# The GitHub organization we're monitoring
+org: 'urbn'
+
+# The repositories we want reports about.
+repositories:
+  - 'A15-AWS-QueueTools'
+  - 'ATG-IBS'
+  - 'ATG-Services'
+  - 'AWSLambdaFunctions'
+  - 'CatalogService'
+  - 'CeleryEventProcessor'
+  - 'CheckoutService'
+  - 'EngageServerExtensions'
+  - 'EngageService'
+  - 'FoundationAndFriends'
+  - 'GroupByConfig'
+  - 'GroupByUtils'
+  - 'ProfileService'
+  - 'RTSRService'
+  - 'RTSRWebUI'
+  - 'RegistryOrchestration'
+  - 'RegistryREST'
+  - 'TokenService'
+  - 'URBNAim'
+  - 'URBNBatch'
+  - 'URBNCat'
+  - 'URBNDAG'
+  - 'URBNJunkDrawer'
+  - 'groundhog-mr'
+  - 'groundhog-engine'
+  - 'pyurbnkit'
+
+# List of repositories that we're ignoring on our dashboard report
+# I figured it's better to include everything we're tracking, and then
+# ignore, rather than omit what we're tracking completely. If it's just
+# a temporary situation - for example, it's a 0.0.x that hasn't really
+# had any meaningful releases yet.
+ignored_repositories:
+  - 'ATG-BCC'
+  - 'MISLWebUI'
+  - 'Prism'
+  - 'URBNCat'
+  - 'URBNCom'
+
+# The default name for the release-candidate branch
+default_release_branch: 'release'
+
+# Branches that start with any of these values are silently ignored
+ignored_branches:
+  - 'QA-tests'
+  - 'poc-'
+  - 'poc_'
+# Commit messages beginning with any of these values are silently ignored as trivial
+# TODO Revisit to see if there is a better way to handle this.
+trivial_commits:
+  - 'Bump'
+  - 'Merge'
+  - 'New'
+  - 'QA-tests'
+  - 'Re-encrypted'
+  - 'Trivial'
+  - 'Update'
+
+
+# Slack integration
+# Note you'll have to separately set the URBN_SLACKER_TOKEN environment variable
+slack:
+  enabled: true
+  channels:
+    - 'a15-services-repos'
+    - 'srvc_release_admin'
