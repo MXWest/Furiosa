@@ -1,31 +1,71 @@
 package main
 
 import (
-	"fmt"
+	"flag"
+	"io/ioutil"
 	"net/http"
-	"os"
+
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
+
+	"github.com/p4tin/Furiosa/app"
 )
 
-func main() {
-	fmt.Println("capable is the furiosa command line")
-	args := os.Args[1:]
-	if len(args) <= 0 {
-		fmt.Printf("Error no arguments given!")
-		os.Exit(1)
-	} else {
-		fmt.Printf("args is %v, len is %d\n", args, len(args))
-	}
-	furiosaHost := args[0]
-	fmt.Printf("Host is %v", furiosaHost)
+var Args app.ArgsStruct
 
-	endPoint := "http://" + furiosaHost + "/health"
-	fmt.Printf("endPoint is %v\n", endPoint)
+func init() {
+	DraftRelease := flag.Bool("draft_release", false, "Create a GitHub Draft release")
+	PreRelease := flag.Bool("pre_release", false, "Create a GitHub Pre-release")
+	CutRelease := flag.Bool("cut_release", false, "Create a GitHub Release")
+	Hotfix := flag.Bool("hotfix", false, "Create a GitHub Release")
+	ReleaseBranchName := flag.String("release_branch_name", "X", "Name of release candidate branch. Default is X.")
+	Suffix := flag.String("rc", "", "Release Candidate Suffix _number_")
+	NoSuffix := flag.Bool("no_rc", false, "No Release Candidate suffix (use with --pre_release)")
+	Repository := flag.String("repository", "", "repository (e.g., urbn/CatalogService)")
+	SemverBump := flag.String("semver_bump", "minor", "One of major, minor or patch. Specifies which part of Semantic Version to increment.")
+	BranchFromName := flag.String("branch_from_name", "", "In any mode creating a release, branch from the named branch to create a new release candidate.")
+	BranchFromSha := flag.String("branch_from_sha", "", "In any mode creating a release, branch from sha to create a new release candidate. \n\tYou must supply a full 40-digit SHA1.")
+
+	flag.Parse()
+
+	Args = app.ArgsStruct{
+		DraftRelease:      *DraftRelease,
+		PreRelease:        *PreRelease,
+		CutRelease:        *CutRelease,
+		Hotfix:            *Hotfix,
+		ReleaseBranchName: *ReleaseBranchName,
+		Suffix:            *Suffix,
+		NoSuffix:          *NoSuffix,
+		Repository:        *Repository,
+		SemverBump:        *SemverBump,
+		BranchFromName:    *BranchFromName,
+		BranchFromSha:     *BranchFromSha,
+	}
+
+	log.Debugf("Args: %+v\n", Args)
+
+	dat, err := ioutil.ReadFile("config/capable_config.yaml")
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	Config := app.ConfigStruct{}
+	err = yaml.Unmarshal(dat, &Config)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	log.Debugf("Config: %+v\n", Config)
+}
+
+func main() {
+	endPoint := "http://localhost:50005/health"
+	log.Infof("EndPoint is %v\n", endPoint)
 
 	resp, err := http.Get(endPoint)
 	if err != nil {
-		fmt.Printf("Problem contacting %v (%v)\n", endPoint, err)
-		os.Exit(2)
+		log.Fatalf("Problem contacting %v (%v)\n", endPoint, err)
 	}
 
-	fmt.Printf("Response is %v\n", resp)
+	log.Infof("Response is %v\n", resp)
 }
